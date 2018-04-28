@@ -12,9 +12,9 @@ void swap(float* a, float* b)
 int partition (float arr[], int low, int high)
 {
     int pivot = arr[high]; 
-    int i = low-1; 
+    int i = low-1, j; 
  
-    for (int j = low; j <= high- 1; j++)
+    for (j = low; j <= high- 1; j++)
     {
         if (arr[j] <= pivot)
         {

@@ -1,7 +1,5 @@
 #include "readCSVFile.h"
 
-char line[MAX_LINE_LENGTH];
-
 CSV_Data* allocCSVHeader()
 {
 	CSV_Data* head = (CSV_Data*)malloc(sizeof(CSV_Data));
@@ -61,30 +59,22 @@ return -1 if error for parsing.
 otherwise return the # of columns.
 */
 int getCSVColNum(FILE * fp){
-	//char line[MAX_LINE_LENGTH] = {0x0};
-	char * mline = line;
+	char* line = (char*)malloc(MAX_LINE_LENGTH);
 	line[0] = '\0';
 	int i = 0;
 	char* ptr;
-	//char *line, *mline;
-	//size_t len;
-	
-	//if (getline(&line, &len, fp))
+
 	if (fgets(line, MAX_LINE_LENGTH, fp))
 	{	
-		mline = line;
-		for(int i = 0; i < 100; i++)
-			printf("%c", line[i]);
-		printf(" strlen %d\n", strlen(line));
-		fflush(stdout);
-		ptr = strtok(mline, ",");
+		printf("%s\n", line);
+		ptr = strtok(line, ",");
 		while(ptr != NULL){
 			i ++;
-			printf("%s %s %s\n", ptr, mline, line);
+			printf("%s\n", ptr);
 			ptr = strtok(NULL, ",");
 		}
 	}
-	//free(line);
+	free(line);
 	fseek(fp, 0, SEEK_SET);
 	return i;
 }
@@ -180,9 +170,9 @@ int getColumn(CSV_Data* head, int col, float* colData){
 		return MEM_ALLOC_FAIL;
 	}
 
-	int i = 0; // indices 
+	int i = 0, k; // indices 
 	while (p != NULL){
-		for (int k = 0; k < p->rows; i++)
+		for (k = 0; k < p->rows; i++)
 			colData[i++] = (p->data[p->colNum*k + col]); 
 		p = p->next;
 	}
@@ -212,7 +202,8 @@ fail:
 
 /* output a column value to the file descripter*/
 void outputColumn( float* colData, int len, FILE* output){
-	for (int i = 0; i < len; i++)
+	int i ;
+	for (i = 0; i < len; i++)
 		fprintf(output, "%f\t", colData[i]);
 	fprintf(output, "\n");
 }

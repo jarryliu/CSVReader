@@ -16,8 +16,9 @@ command cmdList[COMMAND_SIZE] = {
 print the usage of all command 
 */
 void printUsage(){
+	int i;
 	printf("Usage:");
-	for(int i = 0; i < COMMAND_SIZE; i++)
+	for(i = 0; i < COMMAND_SIZE; i++)
 		printf("%s\n", cmdList[i].cmdHelp);
 	printf("\n");
 }
@@ -35,14 +36,14 @@ Return the enum value of the command type.
 */
 int parseCommand(char* line, int* argc, char* argv[]){
 	char* ptr = strtok(line, " ");
-	int count = 0;
+	int count = 0, i;
 	while(ptr != NULL){
 		argv[count++] = ptr;
 		ptr = strtok(NULL, " ");
 	}
 	*argc = count;
 
-	for (int i = 0; i < COMMAND_SIZE; i ++){
+	for (i = 0; i < COMMAND_SIZE; i ++){
 		if (strcmp(argv[0], cmdList[i].cmdName) == 0){
 			return cmdList[i].id;
 		}
@@ -55,6 +56,7 @@ void runCommand(CSV_Data* head, int argc, char* argv[], int type){
 }
 
 int checkValid(CSV_Data* head, int argc, char* argv[], int type){
+	int i, col;
 	if (type < 0 || type >= COMMAND_SIZE) {
 			printf("Command not supported!\n\n");
 			printUsage();
@@ -73,8 +75,8 @@ int checkValid(CSV_Data* head, int argc, char* argv[], int type){
 	// if not load, then all parameters are column number
 	// check whether its a valid column number
 	if (type != LOAD_COMMAND){ 
-		for( int i = 1; i < cmdList[type].paras; i++){
-			int col = atoi(argv[i]) -1;
+		for(i = 1; i < cmdList[type].paras; i++){
+			col = atoi(argv[i]) -1;
 			if (errno == EINVAL || errno == ERANGE){
 				printf("Column number should be an integer.\n");
 				return -1;
@@ -145,7 +147,7 @@ void statCommand(CSV_Data* head, int argc, char* argv[]){
 add two giving columns and output the sum in an array
 */
 void addColCommand(CSV_Data* head, int argc, char* argv[]){
-	int col1, col2;
+	int col1, col2, i;
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
@@ -155,7 +157,7 @@ void addColCommand(CSV_Data* head, int argc, char* argv[]){
 		parseErrInfo(stdout, error);
 		return ;
 	}
-	for(int i = 0; i < head->rows; i++){
+	for(i = 0; i < head->rows; i++){
 		colData1[i] += colData2[i];
 	}
 
@@ -169,7 +171,7 @@ void addColCommand(CSV_Data* head, int argc, char* argv[]){
 subtract two giving columns and return the result in an array
 */
 void subColCommand(CSV_Data* head, int argc, char* argv[]){
-	int col1, col2;
+	int col1, col2, i;
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
@@ -179,7 +181,7 @@ void subColCommand(CSV_Data* head, int argc, char* argv[]){
 		parseErrInfo(stdout, error);
 		return ;
 	}
-	for(int i = 0; i < head->rows; i++){
+	for(i = 0; i < head->rows; i++){
 		colData1[i] -= colData2[i];
 	}
 
@@ -192,7 +194,7 @@ void subColCommand(CSV_Data* head, int argc, char* argv[]){
 multiple two giving columns and return the result in an array
 */
 void mulColCommand(CSV_Data* head, int argc, char* argv[]){
-	int col1, col2;
+	int col1, col2, i;
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
@@ -202,7 +204,7 @@ void mulColCommand(CSV_Data* head, int argc, char* argv[]){
 		parseErrInfo(stdout, error);
 		return ;
 	}
-	for(int i = 0; i < head->rows; i++){
+	for(i = 0; i < head->rows; i++){
 		colData1[i] *= colData2[i];
 	}
 
@@ -216,7 +218,7 @@ divide two giving columns and return the result in an array
 if divide by 0, set to 0.
 */
 void divColCommand(CSV_Data* head, int argc, char* argv[]){
-	int col1, col2;
+	int col1, col2, i;
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
@@ -226,7 +228,7 @@ void divColCommand(CSV_Data* head, int argc, char* argv[]){
 		parseErrInfo(stdout, error);
 		return ;
 	}
-	for(int i = 0; i < head->rows; i++){
+	for(i = 0; i < head->rows; i++){
 		if (colData2[i] != 0)
 			colData1[i] /= colData2[i];
 		else
