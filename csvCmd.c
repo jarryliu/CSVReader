@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 	
 	printf("\nType the command (press enter to exit):\t");
 	while(getline(&line, &len, stdin) != -1){
+
+		printf("\n");
 		// parsing the command
 		line[strlen(line) - 1] = '\0'; // remove '\n' in the end of the string.
 		if (strlen(line) == 0) // press enter to exit

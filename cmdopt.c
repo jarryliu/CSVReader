@@ -95,7 +95,7 @@ void loadCommand(CSV_Data* head, int argc, char* argv[]){
 	freeCSVDataList(head);
 	int error = readCSVData(head, argv[1]);
 	if (error == 0){
-		printf("Load file %s into memory.\n\n", argv[1]);
+		printf("Load file %s into memory.\n", argv[1]);
 		printf("File Info: %d rows and %d columns.\n", head->rows, head->colNum);
 	}
 	else{
@@ -106,13 +106,17 @@ void loadCommand(CSV_Data* head, int argc, char* argv[]){
 
 void colCommand(CSV_Data* head, int argc, char* argv[]){
 	int col = atoi(argv[1]) -1;
-	float* colData;
-	int error = getColumn(head, col, colData);
+	double* colData;
+	int error = getColumn(head, col, &colData);
+
+	// print error infor if getColumn return non zero.
 	if (error != 0){
 		parseErrInfo(stdout, error);
 		free(colData);
 		return ;
 	}
+
+	// print out the content.
 	printf("The content for column %d is: \n", col);
 	outputColumn(colData, head->rows, stdout);
 	free(colData);
@@ -121,13 +125,13 @@ void colCommand(CSV_Data* head, int argc, char* argv[]){
 void statCommand(CSV_Data* head, int argc, char* argv[]){
 	int col = atoi(argv[1]) -1;
 
-	float* colData;
+	double* colData;
 	// memset(colData, 0, sizeof(int)*head->rows);
-	float max, min, median;
+	double max, min, median;
 	int mid = head->rows/2;
 	int error;
 	// get column error, then return
-	error = getColumn(head, col, colData);
+	error = getColumn(head, col, &colData);
 	if (error != 0){
 		parseErrInfo(stdout, error);
 		return ;
@@ -136,10 +140,19 @@ void statCommand(CSV_Data* head, int argc, char* argv[]){
 	quickSort(colData, 0, head->rows-1);
 	min = colData[0];
 	max = colData[head->rows-1];
-	median = head->rows % 2 == 0 ? (colData[mid-1] + colData[mid])/2 : colData[mid];
+
+	// get median
+	median = head->rows % 2 == 0 ? (colData[mid-1] + colData[mid])/2 : colData[mid]; 
+
+	outputColumn(colData, head->rows, stdout);
+	quickSort(colData, 0, head->rows-1);
+
+	printf("first data is %f\n", head->next->data[0]);
 
 	printf("The statistic of column %d: \n", col);
 	printf("max: %f, min: %f, median: %f\n", max, min, median);
+
+	outputColumn(colData, head->rows, stdout);
 	free(colData);
 }
 
@@ -151,8 +164,8 @@ void addColCommand(CSV_Data* head, int argc, char* argv[]){
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
-	float* colData1, * colData2;
-	int error = getTwoColumns(head, col1, col2, colData1, colData2);
+	double* colData1, * colData2;
+	int error = getTwoColumns(head, col1, col2, &colData1, &colData2);
 	if (error != 0){
 		parseErrInfo(stdout, error);
 		return ;
@@ -175,8 +188,8 @@ void subColCommand(CSV_Data* head, int argc, char* argv[]){
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
-	float* colData1, * colData2;
-	int error = getTwoColumns(head, col1, col2, colData1, colData2);
+	double* colData1, * colData2;
+	int error = getTwoColumns(head, col1, col2, &colData1, &colData2);
 	if (error != 0){
 		parseErrInfo(stdout, error);
 		return ;
@@ -198,8 +211,8 @@ void mulColCommand(CSV_Data* head, int argc, char* argv[]){
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
-	float* colData1, * colData2;
-	int error = getTwoColumns(head, col1, col2, colData1, colData2);
+	double* colData1, * colData2;
+	int error = getTwoColumns(head, col1, col2, &colData1, &colData2);
 	if (error != 0){
 		parseErrInfo(stdout, error);
 		return ;
@@ -222,8 +235,8 @@ void divColCommand(CSV_Data* head, int argc, char* argv[]){
 	col1 = atoi(argv[1]) -1;
 	col2 = atoi(argv[2]) -1;
 
-	float* colData1, * colData2;
-	int error = getTwoColumns(head, col1, col2, colData1, colData2);
+	double* colData1, * colData2;
+	int error = getTwoColumns(head, col1, col2, &colData1, &colData2);
 	if (error != 0){
 		parseErrInfo(stdout, error);
 		return ;

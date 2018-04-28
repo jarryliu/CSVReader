@@ -16,7 +16,7 @@ CSV_Data* allocCSVData(int rowNum, int colNum){
 	CSV_Data* newData = (CSV_Data*)malloc(sizeof(CSV_Data));
 	if (newData == NULL) return NULL;
 
-	newData->data = (float*)malloc(sizeof(float)*rowNum*colNum);
+	newData->data = (double*)malloc(sizeof(double)*rowNum*colNum);
 	if (newData->data == NULL){
 		free(newData);
 		return NULL;
@@ -26,7 +26,7 @@ CSV_Data* allocCSVData(int rowNum, int colNum){
 	newData->rowNum = rowNum;
 	newData->colNum = colNum;
 	newData->next = NULL;
-	memset(newData->data, 0, sizeof(float)*rowNum*colNum);
+	memset(newData->data, 0, sizeof(double)*rowNum*colNum);
 	return newData;
 }
 
@@ -39,8 +39,8 @@ void freeCSVData(CSV_Data* p){
 }
 
 /*
-free a list of CSV_Data, initialize the header to 0.
-should the head of CSVDataList (not the dummy head), i.e., dummyHead.next
+free a list of CSV_Data, and initialize the header to 0.
+(do not free header space)
 */
 void freeCSVDataList(CSV_Data* head){
 	CSV_Data* tmp, * p = head->next;
@@ -63,14 +63,13 @@ int getCSVColNum(FILE * fp){
 	line[0] = '\0';
 	int i = 0;
 	char* ptr;
-
+	int error = 0;
+	fseek(fp, 0, SEEK_SET);
 	if (fgets(line, MAX_LINE_LENGTH, fp))
 	{	
-		printf("%s\n", line);
 		ptr = strtok(line, ",");
 		while(ptr != NULL){
 			i ++;
-			printf("%s\n", ptr);
 			ptr = strtok(NULL, ",");
 		}
 	}
@@ -89,7 +88,7 @@ int readCSVData(CSV_Data* head, char* filePath)
 {
 	FILE* fp;
 	char* ptr;
-	char csvline[MAX_LINE_LENGTH];
+	char* line = (char *)malloc(MAX_LINE_LENGTH);
 	int rowNum = DEFAULT_CSV_DATA_ROW;
 
 	CSV_Data* p = head;
@@ -111,11 +110,12 @@ int readCSVData(CSV_Data* head, char* filePath)
 		error = FILE_PARSE_FAIL;
 		goto fail;
 	}
-	printf("get column %d\n", colNum);
+	
+	//printf("get column %d\n", colNum);
 
 	head->colNum = colNum;
 	
-	while (fgets(csvline, MAX_LINE_LENGTH, fp)){
+	while (fgets(line, MAX_LINE_LENGTH, fp)){
 		//printf("read file %s\n", csvline);
 		// if the current CSV_Data structure if full
 		// allocate new CSV_Data structure
@@ -130,16 +130,20 @@ int readCSVData(CSV_Data* head, char* filePath)
 			p = p->next;
 		}
 		j = 0;
+		
 		// parsing each value in a row
-		ptr = strtok(csvline, ","); 
+		ptr = strtok(line, ","); 
 		while(ptr != NULL)
-		{
+		{	
 			p->data[p->rows*colNum + j++] = atof(ptr);
-			if(errno == ERANGE)
-				error = CSV_DATA_TOO_LARGE;
-			else if (errno == EINVAL)
+			if (colNum == 0){
+				printf(" %s %f %d\n", ptr, atof(ptr+1), p->rows*colNum + j-1);
+			}
+
+			// check for error
+			if(errno == ERANGE || errno == EINVAL)
 				error = CSV_DATA_INVALID;
-			if (error != 0){
+			if (error){
 				goto fail;
 			}
 			ptr = strtok(NULL, ",");
@@ -148,10 +152,12 @@ int readCSVData(CSV_Data* head, char* filePath)
 	}
 	head->rows += p->rows;
 
+	free(line);
 	fclose(fp);
 	return 0;
 
 fail: //clear up allocation and close file
+	free(line);
 	freeCSVDataList(head); 
 	fclose(fp); 
 	return error;
@@ -161,19 +167,19 @@ fail: //clear up allocation and close file
 print the column col from the CSV_Data List
 return 0 if success, otherwise error code
 */
-int getColumn(CSV_Data* head, int col, float* colData){
+int getColumn(CSV_Data* head, int col, double** colData){
 	// colNum should be from 0 to colNum -1
 	CSV_Data* p = head->next;
-	colData = (float*)malloc(sizeof(float)*head->rows);
+	(*colData) = (double*)malloc(sizeof(double)*head->rows);
 	if (colData == NULL) {
-		free(colData);
+		free(*colData);
 		return MEM_ALLOC_FAIL;
 	}
 
 	int i = 0, k; // indices 
 	while (p != NULL){
-		for (k = 0; k < p->rows; i++)
-			colData[i++] = (p->data[p->colNum*k + col]); 
+		for (k = 0; k < p->rows; k++)
+			(*colData)[i++] = p->data[p->colNum*k + col]; 
 		p = p->next;
 	}
 	return 0;
@@ -183,7 +189,7 @@ int getColumn(CSV_Data* head, int col, float* colData){
 /*
 get two column and allocate space, and put them in colData1, and colData2
 */
-int getTwoColumns(CSV_Data* head, int col1, int col2, float* colData1, float* colData2){
+int getTwoColumns(CSV_Data* head, int col1, int col2, double** colData1, double** colData2){
 	int error = 0;
 	error = getColumn(head, col1, colData1);
 	if (error != 0)
@@ -194,36 +200,20 @@ int getTwoColumns(CSV_Data* head, int col1, int col2, float* colData1, float* co
 	return 0;
 
 fail:
-	free(colData1);
-	free(colData2);
+	free(*colData1);
+	free(*colData2);
 	return error;
 }
 
 
 /* output a column value to the file descripter*/
-void outputColumn( float* colData, int len, FILE* output){
+void outputColumn( double* colData, int len, FILE* output){
 	int i ;
 	for (i = 0; i < len; i++)
-		fprintf(output, "%f\t", colData[i]);
+		fprintf(output, "%lf  ", colData[i]);
 	fprintf(output, "\n");
 }
 
-// int addColumn(CSV_Data* head, int col1, int col2, int result[]){
-// 	if (col1 >= head->rows){
-// 		//printf("Column number %d is out of range.\n", col1);
-// 		return OUT_OF_RANGE;
-// 	}
-// 	if (col2 >= head->rows){
-// 		printf("Column number %d is out of range.\n", col2);
-// 		return OUT_OF_RANGE;
-// 	}
-// 	float* colData = addColumn(head, col1, col2);
-// 	if (colData == NULL) return ;
-
-// 	printf("The sum for column %d and column %d is: \n", col1, col2);
-// 	outputColumn(colData, head->rows)
-// 	free(colData);
-// }
 
 /* 
 Parse the error and print error information
@@ -243,10 +233,10 @@ void parseErrInfo(FILE* output, int error){
 			fprintf(output, "Given column is out of range.\n");
 			break;
 		case CSV_DATA_TOO_LARGE:
-			fprintf(output, "CSV file data is too large, only float size is supported.\n");
+			fprintf(output, "CSV file data is too large, only double size is supported.\n");
 			break;
 		case CSV_DATA_INVALID:
-			fprintf(output, "CSV file data is invalid, only float data is supported.\n");
+			fprintf(output, "CSV file data is invalid, only double data is supported.\n");
 			break;
 	}
 

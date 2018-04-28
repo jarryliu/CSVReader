@@ -1,40 +1,35 @@
 #include "util.h"
 
-
-// swap two number
-void swap(float* a, float* b)
-{
-	int temp = *a;
-	*a = *b;
-	*b = temp;
+void swap(double *a, double* b){
+    double t = *a;
+    *a = *b;
+    *b = t;
 }
 
-int partition (float arr[], int low, int high)
+void quickSort( double arr[], int l, int r)
 {
-    int pivot = arr[high]; 
-    int i = low-1, j; 
- 
-    for (j = low; j <= high- 1; j++)
-    {
-        if (arr[j] <= pivot)
-        {
-            i++; 
-            swap(&arr[i], &arr[j]);
-        }
-    }
-    swap(&arr[i + 1], &arr[high]);
-    return (i + 1);
+   int j;
+   if( l < r ) {
+		j = partition( arr, l, r);
+		quickSort( arr, l, j-1);
+		quickSort( arr, j+1, r);
+   }
 }
- 
-// use quickSort to sort the array in-place
-void quickSort(float arr[], int low, int high)
-{
-    if (low < high)
-    {
-        int pi = partition(arr, low, high);
 
-        // recursively call
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
-    }
+
+
+int partition( double arr[], int l, int r) {
+	double pivot, t;
+	int i, j;
+	pivot = arr[l];
+	i = l; j = r+1;
+		
+	while( 1){
+		do ++i; while( arr[i] <= pivot && i <= r );
+		do --j; while( arr[j] > pivot );
+		if( i >= j ) break;
+			swap(&arr[i], &arr[j]);
+	}
+    swap(&arr[l], &arr[j]);
+	return j;
 }

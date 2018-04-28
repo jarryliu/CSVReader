@@ -3,8 +3,8 @@
 #define UTIL_H
 
 
-void swap(float* a, float* b);
-int partition (float arr[], int low, int high);
-void quickSort(float arr[], int low, int high);
+void swap(double* a, double* b);
+int partition (double arr[], int low, int high);
+void quickSort(double arr[], int low, int high);
 
 #endif
