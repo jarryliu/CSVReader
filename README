@@ -13,7 +13,7 @@ Type the command (press enter to exit):
 
 ## SUPPORTED COMMANDS
 
-There are 7 command supported:
+There are 7 commands supported:
 
 - `load` command, e.g., `load test.csv`, with a file path as parameter to load the given file into memory.
 
@@ -21,16 +21,16 @@ There are 7 command supported:
 
 - `stat` command, e.g., `stat 3`, with a column number as parameter to print out the statistics information (max, min, and median) of the given column.
 
-- `addcol` command, e.g., `addcol 1 2`, with two column numbers to add the two columns and print out the results.
+- `addcol` command, e.g., `addcol 1 2`, with two column numbers to add the two columns and print out the results, i.e., col 1 + col 2.
 
-- `subcol` command, e.g., `addcol 1 2`, with two column numbers to substract the latter column from former column and output the results.
+- `subcol` command, e.g., `addcol 1 2`, with two column numbers to substract the latter column from former column and output the results, i.e., col 1 - col 2.
 
-- `mulcol` command, e.g., `addcol 1 2`, with two column numbers to multiple two columns and print out the results.
+- `mulcol` command, e.g., `addcol 1 2`, with two column numbers to multiple two columns and print out the results, i.e., col 1 * col 2.
 
-- `divcol` command, e.g., `addcol 1 2`, with two column numbers to divide the former column by the latter one and print out the results.
+- `divcol` command, e.g., `addcol 1 2`, with two column numbers to divide the former column by the latter one and print out the results, i.e., col 1 / col 2.
 
 
-Load command need to be run before any other command. CSV file of number is supported, all data form will not be correctly parsed. 
+`load` command need to be run before any other commands. CSV file of number is supported, all data form will not be correctly parsed. 
 
 Only one file can be loaded into memory at a time, previous data will be freed. 
 
@@ -40,7 +40,7 @@ To get help information, type anything and press enter.
 
 To quit the program, directly press enter.
 
-The maximum length supported is 1024*16 bytes. The default number of rows to allocate is 100.
+The maximum line length for CSV file is 1024*16 bytes. The default number of rows space to allocate is 100.
 
 To increase the capability of the program handling large file, you can change the  macros MAX_LINE_LENGTH and DEFAULT_CSV_DATA_ROW. 
 
