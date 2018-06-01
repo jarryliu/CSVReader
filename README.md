@@ -23,11 +23,11 @@ There are 7 commands supported:
 
 - `addcol` command, e.g., `addcol 1 2`, with two column numbers to add the two columns and print out the results, i.e., col 1 + col 2.
 
-- `subcol` command, e.g., `addcol 1 2`, with two column numbers to substract the latter column from former column and output the results, i.e., col 1 - col 2.
+- `subcol` command, e.g., `subcol 1 2`, with two column numbers to substract the latter column from former column and output the results, i.e., col 1 - col 2.
 
-- `mulcol` command, e.g., `addcol 1 2`, with two column numbers to multiple two columns and print out the results, i.e., col 1 * col 2.
+- `mulcol` command, e.g., `mulcol 1 2`, with two column numbers to multiple two columns and print out the results, i.e., col 1 * col 2.
 
-- `divcol` command, e.g., `addcol 1 2`, with two column numbers to divide the former column by the latter one and print out the results, i.e., col 1 / col 2.
+- `divcol` command, e.g., `divcol 1 2`, with two column numbers to divide the former column by the latter one and print out the results, i.e., col 1 / col 2.
 
 
 `load` command need to be run before any other commands. CSV file of number is supported, all data form will not be correctly parsed. 
